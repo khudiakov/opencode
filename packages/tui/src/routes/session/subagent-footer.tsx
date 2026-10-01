@@ -13,6 +13,10 @@ export function SubagentFooter() {
   const sync = useSync()
   const messages = createMemo(() => sync.data.message[route.sessionID] ?? [])
   const session = createMemo(() => sync.session.get(route.sessionID))
+  const variant = createMemo(() => {
+    const value = session()?.model?.variant
+    return value && value !== "default" ? value : undefined
+  })
 
   const subagentInfo = createMemo(() => {
     const s = session()
@@ -84,6 +88,14 @@ export function SubagentFooter() {
               <text style={{ fg: theme.textMuted }}>
                 ({subagentInfo().index} of {subagentInfo().total})
               </text>
+            </Show>
+            <Show when={variant()}>
+              {(value) => (
+                <text wrapMode="none">
+                  <span style={{ fg: theme.textMuted }}>· </span>
+                  <span style={{ fg: theme.warning, bold: true }}>{value()}</span>
+                </text>
+              )}
             </Show>
             <Show when={usage()}>
               {(item) => (
